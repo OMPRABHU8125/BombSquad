@@ -2,37 +2,38 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
-  AlertTriangle,
   Shield,
-  MapPin,
   Share2,
   BookmarkPlus,
   TrendingUp,
   Target,
+  Leaf,
+  LayoutDashboard,
+  History,
+  RefreshCw,
 } from "lucide-react";
 
-import MobileLayout from "@/components/layout/MobileLayout";
 import { Button } from "@/components/ui/button";
 import TranslateButton from "@/components/common/TranslateButton";
 import ReadAloudButton from "@/components/common/ReadAloudButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 
-/* ---------------- TYPES ---------------- */
+/* ---------------- TYPES (STRICTLY PRESERVED) ---------------- */
 interface DetectionResult {
   crop: string;
   disease: {
     label: string;
-    confidence: number; // 0–1
+    confidence: number;
   } | null;
   source: string;
 }
 
-/* ---------------- HELPERS ---------------- */
+/* ---------------- HELPERS (STRICTLY PRESERVED) ---------------- */
 const formatText = (text: string) =>
   text
     .split("_")
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
 const getSeverityFromConfidence = (c: number) => {
@@ -47,7 +48,7 @@ const getStageFromConfidence = (c: number) => {
   return { label: "Early", level: 1 };
 };
 
-/* ---------------- COMPONENT ---------------- */
+/* ---------------- MAIN COMPONENT ---------------- */
 const Result = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -56,6 +57,7 @@ const Result = () => {
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [image, setImage] = useState<string | null>(null);
 
+  /* ✅ LOAD RESULT + IMAGE */
   useEffect(() => {
     const storedResult = sessionStorage.getItem("detectionResult");
     const storedImage = sessionStorage.getItem("detectionImage");
@@ -65,9 +67,32 @@ const Result = () => {
       return;
     }
 
-    setResult(JSON.parse(storedResult));
-    if (storedImage) setImage(storedImage);
+    try {
+      setResult(JSON.parse(storedResult));
+      if (storedImage) setImage(storedImage);
+    } catch {
+      navigate("/scan");
+    }
   }, [navigate]);
+
+  /* ✅ FETCH & STORE LOCATION */
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const location = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        };
+        sessionStorage.setItem("scanLocation", JSON.stringify(location));
+      },
+      () => {
+        console.warn("Location permission denied");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, []);
 
   if (!result || !result.disease) return null;
 
@@ -77,147 +102,129 @@ const Result = () => {
 
   const diseaseData = {
     name: formatText(result.disease.label),
-    scientificName: "Detected by AI Model",
     crop: formatText(result.crop),
     confidence,
     severity: severity.label,
-    severityLevel: severity.level,
     stage: stage.label,
-    stageNumber: stage.level,
-    spreadRisk: severity.level === 3 ? "High" : severity.level === 2 ? "Medium" : "Low",
-    warningRadius: severity.level === 3 ? "1km" : "500m",
-    affectedArea: severity.level === 3 ? "40%" : "20%",
-    timeline: [
-      { day: "Day 1–3", event: "Initial symptoms visible", status: "completed" },
-      { day: "Day 4–7", event: "Disease spreads to nearby leaves", status: "current" },
-      { day: "Day 8–14", event: "Stem infection possible", status: "upcoming" },
-      { day: "Day 15+", event: "Yield damage risk", status: "upcoming" },
-    ],
-    description:
-      "This disease was detected using AI-based image analysis. Early identification helps prevent spread and yield loss. Immediate preventive measures are recommended.",
-    symptoms: [
-      "Visible leaf discoloration",
-      "Spots or lesions",
-      "Leaf curling",
-      "Reduced plant vigor",
-    ],
+    spreadRisk:
+      severity.level === 3
+        ? "High"
+        : severity.level === 2
+        ? "Medium"
+        : "Low",
   };
 
   const fullDescription = `${diseaseData.name} detected on ${diseaseData.crop} with ${confidence}% confidence. Severity ${diseaseData.severity}.`;
 
-  const handleSaveReport = () => {
-    toast.success("Report saved successfully");
-  };
-
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: "Crop Disease Report",
-        text: fullDescription,
-      });
-    } else {
-      toast.success("Link copied to clipboard");
-    }
-  };
-
   return (
-    <MobileLayout>
-      <div className="min-h-screen bg-background">
-        {/* HEADER IMAGE */}
-        <div className="relative">
-          <div className="h-64 bg-muted">
-            {image ? (
-              <img 
-                src={image} 
-                alt="Detected crop disease" 
-                className="w-full h-full object-cover" 
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-8xl">🌿</div>
-            )}
+    <div className="flex h-screen w-full bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 overflow-hidden">
+      {/* SIDEBAR */}
+      <aside className="w-20 lg:w-72 bg-white/80 backdrop-blur-xl border-r hidden md:flex flex-col py-8 px-6 gap-8">
+        <div className="flex items-center gap-3 px-2">
+          <div className="h-12 w-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center text-white">
+            <Leaf size={28} />
           </div>
-
-          <button
-            onClick={() => navigate(-1)}
-            className="absolute top-5 left-5 p-2 bg-card/90 backdrop-blur-sm rounded-xl shadow-lg"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-
-          <div className="absolute top-5 right-5 flex gap-2">
-            <TranslateButton />
-            <ReadAloudButton text={fullDescription} size="md" />
-            <button 
-              onClick={handleShare} 
-              className="p-2 bg-card/90 backdrop-blur-sm rounded-xl shadow-lg"
-            >
-              <Share2 className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={handleSaveReport} 
-              className="p-2 bg-card/90 backdrop-blur-sm rounded-xl shadow-lg"
-            >
-              <BookmarkPlus className="w-5 h-5" />
-            </button>
-          </div>
+          <span className="hidden lg:block text-2xl font-bold">
+            Krishi Care
+          </span>
         </div>
 
-        {/* MAIN CARD */}
-        <div className="px-5 -mt-8">
-          <div className="bg-card rounded-3xl p-5 shadow-krishi-lg">
-            <span className="text-sm text-muted-foreground">
-              {t("diseaseDetected")}
-            </span>
-            <h1 className="text-2xl font-bold mt-1">{diseaseData.name}</h1>
-            <p className="text-sm text-muted-foreground">
-              {diseaseData.crop} • {diseaseData.scientificName}
-            </p>
+        <nav className="flex flex-col gap-3">
+          <div className="flex items-center gap-4 px-4 py-3 bg-emerald-600 text-white rounded-xl">
+            <LayoutDashboard size={22} />
+            <span className="hidden lg:block">Analysis</span>
+          </div>
 
-            <div className="mt-4">
-              <div className="flex justify-between text-sm mb-1">
-                <span>{t("confidence")}</span>
-                <span className="font-bold">{confidence}%</span>
-              </div>
-              <div className="h-2 bg-secondary rounded-full">
-                <div
-                  className="h-full bg-primary rounded-full"
-                  style={{ width: `${confidence}%` }}
+          <div
+            onClick={() => navigate("/history")}
+            className="flex items-center gap-4 px-4 py-3 text-slate-600 hover:bg-emerald-50 rounded-xl cursor-pointer"
+          >
+            <History size={22} />
+            <span className="hidden lg:block">History</span>
+          </div>
+        </nav>
+      </aside>
+
+      {/* MAIN */}
+      <main className="flex-1 flex flex-col">
+        <header className="bg-white px-8 py-6 flex justify-between items-center border-b">
+          <div className="flex items-center gap-4">
+            <button onClick={() => navigate(-1)}>
+              <ArrowLeft />
+            </button>
+            <h1 className="text-2xl font-bold">Analysis Result</h1>
+          </div>
+
+          <div className="flex gap-4">
+            <TranslateButton />
+            <ReadAloudButton text={fullDescription} />
+            <Share2 />
+            <BookmarkPlus />
+          </div>
+        </header>
+
+        <div className="flex-1 p-10 grid grid-cols-1 xl:grid-cols-12 gap-8">
+          <section className="xl:col-span-5">
+            <div className="bg-white rounded-3xl p-4">
+              {image ? (
+                <img
+                  src={image}
+                  className="w-full h-[500px] object-cover rounded-2xl"
                 />
+              ) : (
+                <div className="h-[500px] flex items-center justify-center">
+                  <Leaf size={120} />
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className="xl:col-span-7">
+            <div className="bg-white rounded-3xl p-12">
+              <h1 className="text-6xl font-bold">{diseaseData.name}</h1>
+              <p className="text-xl mt-4">{diseaseData.crop}</p>
+
+              <div className="grid sm:grid-cols-3 gap-5 mt-10">
+                <StatCard icon={Shield} label="Severity" value={diseaseData.severity} />
+                <StatCard icon={TrendingUp} label="Stage" value={diseaseData.stage} />
+                <StatCard icon={Target} label="Spread Risk" value={diseaseData.spreadRisk} />
+              </div>
+
+              <div className="mt-10 flex gap-4">
+                <Button
+                  onClick={() =>
+                    navigate("/remedies", {
+                      state: {
+                        crop: result.crop,
+                        disease: result.disease?.label,
+                      },
+                    })
+                  }
+                  className="flex-1 h-16 text-xl"
+                >
+                  View Remedies
+                </Button>
+
+                <Button variant="outline" onClick={() => navigate("/scan")}>
+                  <RefreshCw className="mr-2" />
+                  Scan New
+                </Button>
               </div>
             </div>
-          </div>
+          </section>
         </div>
-
-        {/* STATS GRID */}
-        <div className="px-5 mt-6 grid grid-cols-2 gap-3">
-          <StatCard icon={Shield} label={t("severity")} value={diseaseData.severity} />
-          <StatCard icon={TrendingUp} label={t("stage")} value={diseaseData.stage} />
-          <StatCard icon={Target} label={t("spreadRisk")} value={diseaseData.spreadRisk} />
-          <StatCard icon={MapPin} label={t("warningRadius")} value={diseaseData.warningRadius} />
-        </div>
-
-        {/* ACTION */}
-        <div className="px-5 mt-6 pb-6">
-          <Button
-            onClick={() => navigate(`/remedies/${id || "1"}`)}
-            className="w-full h-14 text-lg gradient-primary rounded-2xl"
-          >
-            {t("viewRemedies")}
-          </Button>
-        </div>
-      </div>
-    </MobileLayout>
+      </main>
+    </div>
   );
 };
 
-/* ---------------- SMALL COMPONENT ---------------- */
 const StatCard = ({ icon: Icon, label, value }: any) => (
-  <div className="bg-card rounded-2xl p-4 shadow-krishi-sm">
-    <div className="flex items-center gap-2 mb-1">
-      <Icon className="w-5 h-5 text-primary" />
-      <span className="text-sm text-muted-foreground">{label}</span>
+  <div className="bg-emerald-50 rounded-2xl p-6 flex gap-5">
+    <Icon className="text-emerald-600" />
+    <div>
+      <span className="text-xs uppercase">{label}</span>
+      <p className="text-2xl font-bold">{value}</p>
     </div>
-    <p className="font-bold text-lg">{value}</p>
   </div>
 );
 

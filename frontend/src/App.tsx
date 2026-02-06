@@ -14,6 +14,14 @@ import History from "./pages/History";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback"; // ADD THIS IMPORT
+import AuthGuard from "@/guards/AuthGuard";
+import Unauthorized from "./pages/Unauthorized";
+import { isPWA } from "@/lib/utils/isPWA";
+
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  localStorage.setItem("isPWA", "true");
+}
+
 
 const queryClient = new QueryClient();
 
@@ -24,23 +32,47 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
+          {/* <Routes>
             <Route path="/" element={<Splash />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/auth/callback" element={<AuthCallback />} /> {/* ADD THIS ROUTE */}
+            <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/home" element={<Home />} />
             <Route path="/scan" element={<Scan />} />
             <Route path="/result/:id" element={<Result />} />
-            <Route path="/remedies/:id" element={<Remedies />} />
+            <Route path="/remedies" element={<Remedies />} />
             <Route path="/history" element={<History />} />
             <Route path="/profile" element={<Profile />} />
-            {/* Placeholder routes */}
             <Route path="/library" element={<Home />} />
             <Route path="/crops" element={<Home />} />
             <Route path="/expert" element={<Home />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes> */}
+          <Routes>
+            {/* PUBLIC ROUTES */}
+            <Route path="/" element={<Splash />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+
+            {/* PROTECTED ROUTES */}
+            <Route element={<AuthGuard />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/scan" element={<Scan />} />
+              <Route path="/result" element={<Result />} />
+              <Route path="/remedies" element={<Remedies />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/profile" element={<Profile />} />
+
+
+              {/* placeholders */}
+              <Route path="/library" element={<Home />} />
+              <Route path="/crops" element={<Home />} />
+              <Route path="/expert" element={<Home />} />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
+
         </BrowserRouter>
       </TooltipProvider>
     </LanguageProvider>

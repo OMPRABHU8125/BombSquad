@@ -2,6 +2,28 @@ import * as tf from "@tensorflow/tfjs";
 
 /* tflite is loaded globally via index.html */
 declare const tflite: any;
+// function for parsing the labels 
+
+function parsePlantVillageLabel(raw: string) {
+
+
+  const [cropPart, diseasePart] = raw.split("___");
+
+  const crop = cropPart.split("_")[0];
+
+  const disease = diseasePart
+    .replace(/_/g, " ")
+    .replace(/\(.*?\)/g, "") // remove (maize)
+    .replace(/\b\w/g, c => c.toUpperCase())
+    .trim();
+
+  return { crop, disease };
+}
+
+function normalizeCrop(crop: string) {
+  return crop.charAt(0).toUpperCase() + crop.slice(1).toLowerCase();
+}
+
 
 let cropModel: any;
 let diseaseModel: any;
@@ -85,35 +107,77 @@ async function predictDiseaseTopK(img: HTMLImageElement, k = 3) {
 // =========================================================
 // FINAL DECISION
 // =========================================================
-function decideFinal(cropPred: any, diseaseTop: any[]) {
-  const diseaseCrop = diseaseTop[0].label.split("_")[0];
+// function decideFinal(cropPred: any, diseaseTop: any[]) {
+//   const diseaseCrop = diseaseTop[0].label.split("_")[0];
 
-  if (diseaseTop[0].confidence >= 0.75) {
+//   if (diseaseTop[0].confidence >= 0.75) {
+//     return {
+//       crop: diseaseCrop,
+//       disease: diseaseTop[0],
+//       source: "Disease pattern"
+//     };
+//   }
+
+//   if (cropPred.confidence >= 0.8) {
+//     const allowed = cropDiseaseMap[cropPred.crop] || [];
+//     const match = diseaseTop.find(d => allowed.includes(d.label));
+//     if (match) {
+//       return {
+//         crop: cropPred.crop,
+//         disease: match,
+//         source: "Leaf shape"
+//       };
+//     }
+//   }
+
+//   return {
+//     crop: cropPred.crop,
+//     disease: null,
+//     source: "Low confidence"
+//   };
+// }
+
+function decideFinal(cropPred: any, diseaseTop: any[]) {
+  const top = diseaseTop[0];
+
+  if (top.confidence >= 0.75) {
+    const parsed = parsePlantVillageLabel(top.label);
+
     return {
-      crop: diseaseCrop,
-      disease: diseaseTop[0],
+      crop: normalizeCrop(parsed.crop),
+      disease: {
+        label: parsed.disease,
+        confidence: top.confidence
+      },
       source: "Disease pattern"
     };
   }
 
   if (cropPred.confidence >= 0.8) {
     const allowed = cropDiseaseMap[cropPred.crop] || [];
+
     const match = diseaseTop.find(d => allowed.includes(d.label));
     if (match) {
+      const parsed = parsePlantVillageLabel(match.label);
+
       return {
-        crop: cropPred.crop,
-        disease: match,
+        crop: normalizeCrop(parsed.crop),
+        disease: {
+          label: parsed.disease,
+          confidence: match.confidence
+        },
         source: "Leaf shape"
       };
     }
   }
 
   return {
-    crop: cropPred.crop,
+    crop: normalizeCrop(cropPred.crop),
     disease: null,
     source: "Low confidence"
   };
 }
+
 
 // =========================================================
 // PUBLIC API
