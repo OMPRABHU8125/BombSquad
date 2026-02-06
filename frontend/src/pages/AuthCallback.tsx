@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/contexts/AuthContext';
+import { Loader2 } from 'lucide-react';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { setUser } = useAuth();
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -17,12 +18,7 @@ const AuthCallback = () => {
         // Handle authentication error
         if (error) {
           console.error('Authentication error:', error);
-          toast({
-            title: "Authentication Failed",
-            description: "Unable to sign in with Google. Please try again.",
-            variant: "destructive",
-          });
-          navigate('/login');
+          navigate('/login?error=' + error);
           return;
         }
 
@@ -35,36 +31,23 @@ const AuthCallback = () => {
 
         // Save token to localStorage
         localStorage.setItem('token', token);
-        console.log('Token saved successfully');
 
         // Fetch user profile data
-        try {
-          const response = await fetch('http://localhost:5000/auth/profile', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (response.ok) {
-            const userData = await response.json();
-            localStorage.setItem('user', JSON.stringify(userData));
-            console.log('User data saved:', userData);
-
-            toast({
-              title: "Welcome!",
-              description: `Successfully logged in as ${userData.name}`,
-            });
-          } else {
-            console.warn('Failed to fetch user profile, but continuing...');
+        const response = await fetch('http://localhost:5000/auth/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
-        } catch (err) {
-          console.error('Error fetching user data:', err);
-          // Continue to home even if profile fetch fails
-        }
+        });
 
-        // Redirect to home page
-        console.log('Redirecting to home...');
-        navigate('/home');
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+          console.log('User authenticated:', userData);
+          navigate('/home');
+        } else {
+          console.error('Failed to fetch user profile');
+          navigate('/login');
+        }
 
       } catch (error) {
         console.error('Unexpected error in auth callback:', error);
@@ -73,12 +56,12 @@ const AuthCallback = () => {
     };
 
     handleCallback();
-  }, [navigate, toast]);
+  }, [navigate, setUser]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
-      <div className="text-center p-8">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-6"></div>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+      <div className="text-center p-8 bg-white rounded-2xl shadow-xl">
+        <Loader2 className="w-16 h-16 animate-spin text-green-600 mx-auto mb-6" />
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">
           Authenticating...
         </h2>

@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { AuthProvider } from "@/contexts/AuthContext"; // ✅ ADD THIS
 import Splash from "./pages/Splash";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -13,7 +14,7 @@ import Remedies from "./pages/Remedies";
 import History from "./pages/History";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-import AuthCallback from "./pages/AuthCallback"; // ADD THIS IMPORT
+import AuthCallback from "./pages/AuthCallback";
 import AuthGuard from "@/guards/AuthGuard";
 import Unauthorized from "./pages/Unauthorized";
 import { isPWA } from "@/lib/utils/isPWA";
@@ -22,60 +23,44 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
   localStorage.setItem("isPWA", "true");
 }
 
-
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <LanguageProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          {/* <Routes>
-            <Route path="/" element={<Splash />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/scan" element={<Scan />} />
-            <Route path="/result/:id" element={<Result />} />
-            <Route path="/remedies" element={<Remedies />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/library" element={<Home />} />
-            <Route path="/crops" element={<Home />} />
-            <Route path="/expert" element={<Home />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes> */}
-          <Routes>
-            {/* PUBLIC ROUTES */}
-            <Route path="/" element={<Splash />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/unauthorized" element={<Unauthorized />} />
+    <AuthProvider> {/* ✅ WRAP WITH AuthProvider */}
+      <LanguageProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* PUBLIC ROUTES */}
+              <Route path="/" element={<Splash />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
 
-            {/* PROTECTED ROUTES */}
-            <Route element={<AuthGuard />}>
-              <Route path="/home" element={<Home />} />
-              <Route path="/scan" element={<Scan />} />
-              <Route path="/result" element={<Result />} />
-              <Route path="/remedies" element={<Remedies />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/profile" element={<Profile />} />
+              {/* PROTECTED ROUTES */}
+              <Route element={<AuthGuard />}>
+                <Route path="/home" element={<Home />} />
+                <Route path="/scan" element={<Scan />} />
+                <Route path="/result" element={<Result />} />
+                <Route path="/remedies" element={<Remedies />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/profile" element={<Profile />} />
 
+                {/* placeholders */}
+                <Route path="/library" element={<Home />} />
+                <Route path="/crops" element={<Home />} />
+                <Route path="/expert" element={<Home />} />
+              </Route>
 
-              {/* placeholders */}
-              <Route path="/library" element={<Home />} />
-              <Route path="/crops" element={<Home />} />
-              <Route path="/expert" element={<Home />} />
-            </Route>
-
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-
-        </BrowserRouter>
-      </TooltipProvider>
-    </LanguageProvider>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </LanguageProvider>
+    </AuthProvider> {/* ✅ CLOSE AuthProvider */}
   </QueryClientProvider>
 );
 

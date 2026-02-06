@@ -1,15 +1,27 @@
-import { Bell, Leaf } from "lucide-react";
+import { Bell, Leaf, LogOut } from "lucide-react";
 import WeatherWidget from "@/components/home/WeatherWidget";
 import QuickActions from "@/components/home/QuickActions";
 import RecentScans from "@/components/home/RecentScans";
 import TranslateButton from "@/components/common/TranslateButton";
 import ReadAloudButton from "@/components/common/ReadAloudButton";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const { t } = useLanguage();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   
-  const welcomeText = "Welcome back, Farmer Ravi. Check the weather conditions and recent scans. Use quick actions to scan your crops or access the disease library.";
+  // Extract first name from full name
+  const firstName = user?.name?.split(' ')[0] || 'Farmer';
+  
+  const welcomeText = `${t('welcomeBack')}, ${firstName}. Check the weather conditions and recent scans. Use quick actions to scan your crops or access the disease library.`;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -18,12 +30,24 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center gap-4">
-              <div className="bg-gradient-to-br from-green-500 to-emerald-600 w-14 h-14 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/50">
-                <Leaf className="w-8 h-8 text-white" />
-              </div>
+              {user?.picture ? (
+                <img 
+                  src={user.picture} 
+                  alt={user.name}
+                  className="w-14 h-14 rounded-xl object-cover shadow-lg border-2 border-green-500"
+                />
+              ) : (
+                <div className="bg-gradient-to-br from-green-500 to-emerald-600 w-14 h-14 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/50">
+                  <Leaf className="w-8 h-8 text-white" />
+                </div>
+              )}
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{t('welcomeBack')} 👋</p>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Farmer Ravi</h1>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {t('welcomeBack')} 👋
+                </p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {user?.name || 'Farmer'}
+                </h1>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -33,6 +57,16 @@ const Home = () => {
                 <Bell className="w-6 h-6 text-gray-700 dark:text-gray-300" />
                 <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse" />
               </button>
+              
+              {user && (
+                <button 
+                  onClick={handleLogout}
+                  className="p-3 bg-red-50 dark:bg-red-900/30 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors shadow-sm group"
+                  title="Logout"
+                >
+                  <LogOut className="w-6 h-6 text-red-600 dark:text-red-400 group-hover:scale-110 transition-transform" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -61,7 +95,7 @@ const Home = () => {
             <RecentScans />
           </div>
 
-          {/* Right Column - Sidebar (optional for future content) */}
+          {/* Right Column - Sidebar */}
           <div className="lg:col-span-4 space-y-6">
             {/* Tips Card */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
