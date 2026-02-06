@@ -8,6 +8,8 @@ require("./config/passport");
 
 const authRoutes = require("./routes/auth.routes");
 const diseaseRoutes = require("./routes/disease.routes");
+const marketplaceRoutes = require("./routes/marketplace.routes");
+
 
 const app = express();
 
@@ -22,6 +24,8 @@ app.use(passport.initialize());
 // Routes
 app.use("/auth", authRoutes);
 app.use("/api/disease", diseaseRoutes);
+app.use("/api/marketplaces", marketplaceRoutes);
+
 
 // ✅ Backend health check (SAFE)
 app.get("/api/health", (req, res) => {

@@ -14,6 +14,7 @@ import TranslateButton from "@/components/common/TranslateButton";
 import ReadAloudButton from "@/components/common/ReadAloudButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchDiseaseDetails } from "@/services/diseaseApi";
+import { fetchNearbyMarkets } from "@/services/marketplaceApi";
 import { toast } from "sonner";
 
 const Remedies = () => {
@@ -24,9 +25,14 @@ const Remedies = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  const [activeTab, setActiveTab] = useState("home");
+  const [markets, setMarkets] = useState<any[]>([]);
+  const [marketsLoading, setMarketsLoading] = useState(false);
 
+  const token = localStorage.getItem("token");
+
+  /* ---------------- FETCH DISEASE DATA ---------------- */
+  useEffect(() => {
     if (!token) {
       toast.error("Login required");
       navigate("/login");
@@ -56,7 +62,27 @@ const Remedies = () => {
         toast.error("Failed to load treatment options");
       })
       .finally(() => setLoading(false));
-  }, [crop, disease, navigate]);
+  }, [crop, disease, navigate, token]);
+
+  /* ---------------- FETCH MARKETPLACES ON TAB CLICK ---------------- */
+  useEffect(() => {
+    if (activeTab !== "market") return;
+    if (markets.length > 0) return; // prevent refetch
+
+    if (!token || !crop) return;
+
+    setMarketsLoading(true);
+
+    fetchNearbyMarkets(token, crop)
+      .then((res) => {
+        setMarkets(res.marketplaces || []);
+      })
+      .catch((err) => {
+        console.error("Marketplace fetch failed:", err);
+        toast.error("Failed to load marketplaces");
+      })
+      .finally(() => setMarketsLoading(false));
+  }, [activeTab, crop, token, markets.length]);
 
   if (loading) {
     return <div className="p-10 text-center">Loading treatment options...</div>;
@@ -73,7 +99,7 @@ const Remedies = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
-      <Tabs defaultValue="home">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <header className="sticky top-0 z-20 bg-white border-b">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between h-16">
@@ -91,7 +117,7 @@ const Remedies = () => {
               <TranslateButton />
             </div>
 
-            <TabsList className="grid grid-cols-3">
+            <TabsList className="grid grid-cols-4">
               <TabsTrigger value="home">
                 <Home /> Remedies
               </TabsTrigger>
@@ -100,6 +126,9 @@ const Remedies = () => {
               </TabsTrigger>
               <TabsTrigger value="avoid">
                 <AlertTriangle /> Avoid
+              </TabsTrigger>
+              <TabsTrigger value="market">
+                <ShoppingCart /> Marketplaces
               </TabsTrigger>
             </TabsList>
           </div>
@@ -118,6 +147,7 @@ const Remedies = () => {
         )}
 
         <main className="max-w-7xl mx-auto p-4">
+          {/* ---------------- REMEDIES ---------------- */}
           <TabsContent value="home">
             <ReadAloudButton
               text={
@@ -137,6 +167,7 @@ const Remedies = () => {
             ))}
           </TabsContent>
 
+          {/* ---------------- PRODUCTS ---------------- */}
           <TabsContent value="products">
             {data.products.map((p: any, i: number) => (
               <div key={i} className="bg-white p-4 rounded shadow mb-4">
@@ -150,6 +181,7 @@ const Remedies = () => {
             ))}
           </TabsContent>
 
+          {/* ---------------- AVOID ---------------- */}
           <TabsContent value="avoid">
             {data.avoid.map((a: any, i: number) => (
               <div
@@ -158,6 +190,37 @@ const Remedies = () => {
               >
                 <h3 className="font-semibold">{a.title}</h3>
                 <p>{a.reason}</p>
+              </div>
+            ))}
+          </TabsContent>
+
+          {/* ---------------- MARKETPLACES ---------------- */}
+          <TabsContent value="market">
+            {marketsLoading && (
+              <div className="text-center py-10">
+                Loading nearby marketplaces...
+              </div>
+            )}
+
+            {!marketsLoading && markets.length === 0 && (
+              <div className="text-center py-10 text-slate-500">
+                No marketplace data available
+              </div>
+            )}
+
+            {markets.map((m: any, i: number) => (
+              <div
+                key={i}
+                className="bg-white p-4 rounded shadow mb-4 border-l-4 border-emerald-500"
+              >
+                <h3 className="font-bold">{m.name}</h3>
+                <p>{m.district}</p>
+                <p className="text-green-700 font-semibold">
+                  ₹{m.pricePerQuintal} / quintal
+                </p>
+                <p className="text-sm text-slate-500">
+                  Demand: {m.demand}
+                </p>
               </div>
             ))}
           </TabsContent>
