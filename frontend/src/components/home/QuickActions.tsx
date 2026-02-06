@@ -1,4 +1,4 @@
-import { Camera, BookOpen, Leaf, MessageCircle } from "lucide-react";
+import { Camera, BookOpen, Leaf, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const actions = [
@@ -24,10 +24,10 @@ const actions = [
     color: "bg-krishi-warning",
   },
   {
-    icon: MessageCircle,
-    label: "Expert Help",
-    description: "Get advice",
-    path: "/expert",
+    icon: Users,
+    label: "Community",
+    description: "See farmer scans",
+    path: "/community",
     color: "bg-krishi-earth",
   },
 ];

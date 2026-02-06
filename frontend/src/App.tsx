@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
-import { AuthProvider } from "@/contexts/AuthContext"; // ✅ ADD THIS
+import { AuthProvider } from "@/contexts/AuthContext";
 import Splash from "./pages/Splash";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -13,6 +13,7 @@ import Result from "./pages/Result";
 import Remedies from "./pages/Remedies";
 import History from "./pages/History";
 import Profile from "./pages/Profile";
+import Community from "./pages/Community"; // ✅ ADD THIS IMPORT
 import NotFound from "./pages/NotFound";
 import AuthCallback from "./pages/AuthCallback";
 import AuthGuard from "@/guards/AuthGuard";
@@ -27,7 +28,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider> {/* ✅ WRAP WITH AuthProvider */}
+    <AuthProvider>
       <LanguageProvider>
         <TooltipProvider>
           <Toaster />
@@ -48,6 +49,7 @@ const App = () => (
                 <Route path="/remedies" element={<Remedies />} />
                 <Route path="/history" element={<History />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/community" element={<Community />} /> {/* ✅ ADD THIS ROUTE */}
 
                 {/* placeholders */}
                 <Route path="/library" element={<Home />} />
@@ -60,7 +62,7 @@ const App = () => (
           </BrowserRouter>
         </TooltipProvider>
       </LanguageProvider>
-    </AuthProvider> {/* ✅ CLOSE AuthProvider */}
+    </AuthProvider>
   </QueryClientProvider>
 );
 
