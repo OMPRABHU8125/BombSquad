@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* Krishi Care - Agriculture App Design System */
+
+@layer base {
+  :root {
+    /* Fresh green nature palette */
+    --background: 60 30% 98%;
+    --foreground: 150 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 30% 15%;
+
+    /* Primary - Fresh Leaf Green */
+    --primary: 142 71% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Warm Earth Cream */
+    --secondary: 45 40% 94%;
+    --secondary-foreground: 150 30% 20%;
+
+    /* Muted - Soft sage */
+    --muted: 120 15% 92%;
+    --muted-foreground: 150 15% 45%;
+
+    /* Accent - Deep forest green */
+    --accent: 155 60% 30%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 120 20% 88%;
+    --input: 120 20% 88%;
+    --ring: 142 71% 45%;
+
+    --radius: 1rem;
+
+    /* Custom tokens for Krishi Care */
+    --krishi-green-light: 142 70% 85%;
+    --krishi-green: 142 71% 45%;
+    --krishi-green-dark: 155 60% 30%;
+    --krishi-cream: 45 40% 96%;
+    --krishi-earth: 30 40% 35%;
+    --krishi-sky: 200 80% 55%;
+    --krishi-sun: 45 100% 55%;
+    --krishi-warning: 30 90% 55%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(142 71% 45%) 0%, hsl(155 60% 35%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(120 20% 97%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(142 70% 92%) 0%, hsl(60 30% 98%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px -2px hsl(150 30% 30% / 0.08);
+    --shadow-md: 0 4px 16px -4px hsl(150 30% 30% / 0.12);
+    --shadow-lg: 0 8px 32px -8px hsl(150 30% 30% / 0.16);
+    --shadow-primary: 0 4px 20px -4px hsl(142 71% 45% / 0.4);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 150 30% 8%;
+    --foreground: 60 20% 95%;
+
+    --card: 150 25% 12%;
+    --card-foreground: 60 20% 95%;
+
+    --popover: 150 25% 12%;
+    --popover-foreground: 60 20% 95%;
+
+    --primary: 142 71% 50%;
+    --primary-foreground: 150 30% 8%;
+
+    --secondary: 150 20% 18%;
+    --secondary-foreground: 60 20% 95%;
+
+    --muted: 150 20% 18%;
+    --muted-foreground: 120 10% 60%;
+
+    --accent: 142 60% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 150 20% 20%;
+    --input: 150 20% 20%;
+    --ring: 142 71% 50%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .shadow-krishi-sm {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .shadow-krishi-md {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shadow-krishi-lg {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .shadow-krishi-primary {
+    box-shadow: var(--shadow-primary);
+  }
+
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-krishi-green-light {
+    background-color: hsl(var(--krishi-green-light));
+  }
+
+  .bg-krishi-warning {
+    background-color: hsl(var(--krishi-warning));
+  }
+
+  .text-krishi-warning {
+    color: hsl(var(--krishi-warning));
+  }
+
+  .text-krishi-sky {
+    color: hsl(var(--krishi-sky));
+  }
+
+  .text-krishi-sun {
+    color: hsl(var(--krishi-sun));
+  }
+
+  .bg-krishi-sky {
+    background-color: hsl(var(--krishi-sky));
+  }
+
+  .bg-krishi-sun {
+    background-color: hsl(var(--krishi-sun));
+  }
+}
