@@ -61,10 +61,10 @@ const Login = () => {
                 <Leaf className="w-12 h-12 text-white" />
               </div>
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">
-                Krishi Care
+                {t('appName')}
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-400 max-w-md">
-                Your AI-powered crop disease detector for healthier farms
+                {t('appTagline')}
               </p>
             </div>
 
@@ -76,10 +76,10 @@ const Login = () => {
                 </div>
                 <div className="text-left">
                   <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
-                    Instant AI Detection
+                    {t('instantAIDetection')}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    Get disease identification in seconds using advanced machine learning
+                    {t('instantAIDetectionDesc')}
                   </p>
                 </div>
               </div>
@@ -90,10 +90,10 @@ const Login = () => {
                 </div>
                 <div className="text-left">
                   <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
-                    Expert Remedies
+                    {t('expertRemedies')}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    Access proven treatments and preventive measures for crop diseases
+                    {t('expertRemediesDesc')}
                   </p>
                 </div>
               </div>
@@ -104,10 +104,10 @@ const Login = () => {
                 </div>
                 <div className="text-left">
                   <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
-                    Offline Capable
+                    {t('offlineCapable')}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    Works without internet connection for remote farming areas
+                    {t('offlineCapableDesc')}
                   </p>
                 </div>
               </div>
@@ -135,10 +135,10 @@ const Login = () => {
 
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  Welcome Back
+                  {t('welcomeBackLogin')}
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400">
-                  Sign in to start detecting crop diseases
+                  {t('signInSubtitle')}
                 </p>
               </div>
 
@@ -171,7 +171,7 @@ const Login = () => {
 
                 <div className="flex items-center gap-4">
                   <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600" />
-                  <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">or</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t('orText')}</span>
                   <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600" />
                 </div>
 
@@ -192,15 +192,15 @@ const Login = () => {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-green-600 dark:text-green-400">50K+</div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">Users</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">{t('users50k')}</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-green-600 dark:text-green-400">95%</div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">Accuracy</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">{t('accuracy95')}</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-green-600 dark:text-green-400">24/7</div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">Support</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">{t('support24x7')}</div>
                   </div>
                 </div>
               </div>
@@ -209,13 +209,13 @@ const Login = () => {
             {/* Footer */}
             <div className="text-center mt-6">
               <p className="text-xs text-gray-600 dark:text-gray-400">
-                By continuing, you agree to our{" "}
+                {t('byContinuing')}{" "}
                 <a href="#" className="text-green-600 dark:text-green-400 hover:underline">
-                  Terms
+                  {t('terms')}
                 </a>{" "}
                 &{" "}
                 <a href="#" className="text-green-600 dark:text-green-400 hover:underline">
-                  Privacy Policy
+                  {t('privacyPolicy')}
                 </a>
               </p>
             </div>
