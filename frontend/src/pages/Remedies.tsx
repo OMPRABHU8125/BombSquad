@@ -16,6 +16,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchDiseaseDetails } from "@/services/diseaseApi";
 import { fetchNearbyMarkets } from "@/services/marketplaceApi";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { llmTranslateJSON } from "@/lib/utils/llmTranslate";
+
 
 const Remedies = () => {
   const navigate = useNavigate();
@@ -30,8 +33,21 @@ const Remedies = () => {
   const [marketsLoading, setMarketsLoading] = useState(false);
 
   const token = localStorage.getItem("token");
+  const { language } = useLanguage();
+  const [translatedData, setTranslatedData] = useState<any>(null);
+  const [translating, setTranslating] = useState(false);
+
 
   /* ---------------- FETCH DISEASE DATA ---------------- */
+  useEffect(() => {
+    if (!data) return;
+
+    setTranslating(true);
+    llmTranslateJSON(data, language)
+      .then(setTranslatedData)
+      .finally(() => setTranslating(false));
+  }, [language]);
+
   useEffect(() => {
     if (!token) {
       toast.error("Login required");
@@ -48,15 +64,23 @@ const Remedies = () => {
     setLoading(true);
 
     fetchDiseaseDetails(token, crop, disease)
-      .then((res) => {
-        setData({
+      .then(async (res) => {
+        const baseData = {
           ...res.data,
           remedies: res?.data?.remedies || [],
           products: res?.data?.products || [],
           avoid: res?.data?.avoid || [],
           warning: res.warning || null,
-        });
+        };
+
+        setData(baseData);
+
+        setTranslating(true);
+        const translated = await llmTranslateJSON(baseData, language);
+        setTranslatedData(translated);
+        setTranslating(false);
       })
+
       .catch((err) => {
         console.error("Treatment load failed:", err);
         toast.error("Failed to load treatment options");
@@ -151,15 +175,15 @@ const Remedies = () => {
           <TabsContent value="home">
             <ReadAloudButton
               text={
-                data.remedies.length
-                  ? data.remedies
-                      .map((r: any) => `${r.title}. ${r.steps}`)
-                      .join(". ")
+                translatedData.remedies.length
+                  ? translatedData.remedies
+                    .map((r: any) => `${r.title}. ${r.steps}`)
+                    .join(". ")
                   : "No home remedies available."
               }
             />
 
-            {data.remedies.map((r: any, i: number) => (
+            {translatedData.remedies.map((r: any, i: number) => (
               <div key={i} className="bg-white p-4 rounded shadow mb-4">
                 <h3 className="font-semibold">{r.title}</h3>
                 <p>{r.steps}</p>
@@ -183,7 +207,7 @@ const Remedies = () => {
 
           {/* ---------------- AVOID ---------------- */}
           <TabsContent value="avoid">
-            {data.avoid.map((a: any, i: number) => (
+            {translatedData.avoid.map((a: any, i: number) => (
               <div
                 key={i}
                 className="bg-white p-4 rounded shadow mb-4 border-l-4 border-red-500"
