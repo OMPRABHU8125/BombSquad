@@ -27,24 +27,6 @@ const Scan = () => {
   const [loadingModels, setLoadingModels] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize models on component mount
-  // useEffect(() => {
-  //   const loadModels = async () => {
-  //     try {
-  //       setLoadingModels(true);
-  //       await initModels();
-  //       setModelsLoaded(true);
-  //       console.log("✅ AI models loaded successfully");
-  //     } catch (err) {
-  //       console.error("❌ Failed to load models:", err);
-  //       setError("Failed to load AI models. Please refresh the page.");
-  //     } finally {
-  //       setLoadingModels(false);
-  //     }
-  //   };
-
-  //   loadModels();
-  // }, []);
   useEffect(() => {
     const loadModels = async () => {
       try {
@@ -54,29 +36,25 @@ const Scan = () => {
         }
         setModelsLoaded(true);
       } catch (err) {
-        setError("Failed to load AI models.");
+        setError(t('scanFailed'));
       } finally {
         setLoadingModels(false);
       }
     };
 
     loadModels();
-  }, []);
-
+  }, [modelsLoaded, t]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Clear any previous errors
       setError(null);
 
-      // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         setError("Image too large. Please select an image smaller than 10MB.");
         return;
       }
 
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         setError("Invalid file type. Please select an image.");
         return;
@@ -107,24 +85,21 @@ const Scan = () => {
 
       console.log("🔍 Starting disease detection...");
 
-      // Run AI detection
       await imageRef.current.decode();
       const result: DetectionResult = await detectDisease(imageRef.current);
 
       console.log("✅ Detection complete:", result);
 
-      // Store result in sessionStorage to pass to result page
       sessionStorage.setItem('detectionResult', JSON.stringify(result));
       sessionStorage.setItem('detectionImage', selectedImage || '');
 
-      // Navigate to result page after a short delay for UX
       setTimeout(() => {
         navigate("/result");
       }, 1000);
 
     } catch (err) {
       console.error("❌ Detection failed:", err);
-      setError("Analysis failed. Please try again with a clearer image.");
+      setError(t('scanFailed'));
       setIsScanning(false);
     }
   };
@@ -135,7 +110,7 @@ const Scan = () => {
     setError(null);
   };
 
-  const tipsText = "Tips for better results: Take clear, well-lit photos of affected leaves. Include both healthy and diseased parts if visible. Avoid blurry or shadowy images.";
+  const tipsText = t('tipsText');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -170,7 +145,7 @@ const Scan = () => {
                     <div className="w-6 h-6 border-3 border-yellow-600 border-t-transparent rounded-full animate-spin" />
                     <div className="flex-1">
                       <p className="font-semibold text-yellow-900 dark:text-yellow-100">
-                        Loading AI Models...
+                        {t('loadingAIModels')}
                       </p>
                       <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
                         This may take a few seconds on first load
@@ -192,7 +167,7 @@ const Scan = () => {
                         AI Ready
                       </p>
                       <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                        Offline disease detection enabled
+                        {t('offlineEnabled')}
                       </p>
                     </div>
                   </div>
@@ -241,10 +216,10 @@ const Scan = () => {
                         <div className="bg-white dark:bg-gray-800 rounded-2xl px-8 py-6 text-center shadow-2xl">
                           <Zap className="w-12 h-12 text-green-500 mx-auto animate-pulse" />
                           <p className="text-lg font-semibold text-gray-900 dark:text-white mt-3">
-                            Analyzing...
+                            {t('analyzing')}
                           </p>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            AI is detecting diseases
+                            {t('analyzingSub')}
                           </p>
                         </div>
                       </div>
@@ -265,10 +240,10 @@ const Scan = () => {
                     <Camera className="w-12 h-12 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white text-center">
-                    Capture or Upload
+                    {t('captureOrUpload')}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 text-center mt-3 max-w-md">
-                    Take a photo of your crop leaf to detect diseases using our AI-powered analysis
+                    {t('scanTips')}
                   </p>
                 </div>
               )}
@@ -285,17 +260,17 @@ const Scan = () => {
                       {isScanning ? (
                         <>
                           <Zap className="w-6 h-6 mr-2 animate-pulse" />
-                          Analyzing...
+                          {t('analyzing')}
                         </>
                       ) : !modelsLoaded ? (
                         <>
                           <div className="w-6 h-6 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Loading AI...
+                          {t('loadingAIModels')}
                         </>
                       ) : (
                         <>
                           <Zap className="w-6 h-6 mr-2" />
-                          Analyze Disease
+                          {t('analyzeDisease')}
                         </>
                       )}
                     </Button>
@@ -346,7 +321,7 @@ const Scan = () => {
                     <span className="text-2xl">📸</span>
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                    Tips for Better Results
+                    {t('tipsTitle')}
                   </h3>
                 </div>
                 <ReadAloudButton text={tipsText} size="sm" />
@@ -356,25 +331,25 @@ const Scan = () => {
                   <span className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
                   </span>
-                  <span>Take clear, well-lit photos of affected leaves</span>
+                  <span>{t('tip1')}</span>
                 </li>
                 <li className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
                   <span className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
                   </span>
-                  <span>Include both healthy and diseased parts if visible</span>
+                  <span>{t('tip2')}</span>
                 </li>
                 <li className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
                   <span className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
                   </span>
-                  <span>Avoid blurry or shadowy images</span>
+                  <span>{t('tip3')}</span>
                 </li>
                 <li className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
                   <span className="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
                   </span>
-                  <span>Fill the frame with the leaf for best accuracy</span>
+                  <span>{t('tip4')}</span>
                 </li>
               </ul>
             </div>
@@ -382,20 +357,20 @@ const Scan = () => {
             {/* Feature Highlights */}
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl shadow-lg p-6 border border-green-200 dark:border-green-800">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                🌱 Why Use Our AI Scanner?
+                🌱 {t('whyUseScanner')}
               </h3>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
                   <Zap className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                  <span><strong>Instant Results:</strong> Get disease identification in seconds</span>
+                  <span><strong>{t('feature1Title')}</strong> {t('feature1Desc')}</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
                   <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                  <span><strong>High Accuracy:</strong> Advanced AI trained on thousands of crop images</span>
+                  <span><strong>{t('feature2Title')}</strong> {t('feature2Desc')}</span>
                 </li>
                 <li className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
                   <Info className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                  <span><strong>Offline Mode:</strong> Works without internet connection</span>
+                  <span><strong>{t('feature3Title')}</strong> {t('feature3Desc')}</span>
                 </li>
               </ul>
             </div>
