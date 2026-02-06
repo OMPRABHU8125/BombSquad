@@ -237,7 +237,80 @@ feature3Desc: {
   aboutDisease: { en: 'About this Disease', hi: 'इस बीमारी के बारे में', te: 'ఈ వ్యాధి గురించి', ta: 'இந்த நோயைப் பற்றி', kn: 'ಈ ರೋಗದ ಬಗ್ಗೆ', mr: 'या आजाराबद्दल' },
   viewRemedies: { en: 'View Remedies', hi: 'इलाज देखें', te: 'నివారణలు చూడండి', ta: 'தீர்வுகளைக் காண்க', kn: 'ಪರಿಹಾರಗಳನ್ನು ನೋಡಿ', mr: 'उपाय पहा' },
   saveReport: { en: 'Save Report', hi: 'रिपोर्ट सेव करें', te: 'నివేదికను సేవ్ చేయండి', ta: 'அறிக்கையை சேமிக்கவும்', kn: 'ವರದಿಯನ್ನು ಉಳಿಸಿ', mr: 'अहवाल जतन करा' },
+  // Add these to your LanguageContext.tsx translations:
 
+// Result Page - Missing translations
+analysisResult: {
+  en: "Analysis Result",
+  hi: "जांच परिणाम",
+  te: "విశ్లేషణ ఫలితం",
+  ta: "பகுப்பாய்வு முடிவு",
+  kn: "ವಿಶ್ಲೇಷಣೆ ಫಲಿತಾಂಶ",
+  mr: "तपासणी निकाल"
+},
+
+analysis: {
+  en: "Analysis",
+  hi: "जांच",
+  te: "విశ్లేషణ",
+  ta: "பகுப்பாய்வு",
+  kn: "ವಿಶ್ಲೇಷಣೆ",
+  mr: "तपासणी"
+},
+
+history: {
+  en: "History",
+  hi: "इतिहास",
+  te: "చరిత్ర",
+  ta: "வரலாறு",
+  kn: "ಇತಿಹಾಸ",
+  mr: "इतिहास"
+},
+
+modelConfidence: {
+  en: "Model Confidence",
+  hi: "मॉडल का भरोसा",
+  te: "మోడల్ విశ్వాసం",
+  ta: "மாதிரி நம்பகத்தன்மை",
+  kn: "ಮಾದರಿ ವಿಶ್ವಾಸ",
+  mr: "मॉडेलचा विश्वास"
+},
+
+confidenceLow: {
+  en: "Low",
+  hi: "कम",
+  te: "తక్కువ",
+  ta: "குறைவு",
+  kn: "ಕಡಿಮೆ",
+  mr: "कमी"
+},
+
+confidenceMedium: {
+  en: "Medium",
+  hi: "मध्यम",
+  te: "మధ్యస్థ",
+  ta: "நடுத்தர",
+  kn: "ಮಧ್ಯಮ",
+  mr: "मध्यम"
+},
+
+confidenceHigh: {
+  en: "High",
+  hi: "ज्यादा",
+  te: "అధిక",
+  ta: "அதிக",
+  kn: "ಹೆಚ್ಚು",
+  mr: "जास्त"
+},
+
+scanNew: {
+  en: "Scan New",
+  hi: "नई स्कैन करें",
+  te: "కొత్త స్కాన్ చేయండి",
+  ta: "புதிய ஸ்கேன் செய்யவும்",
+  kn: "ಹೊಸ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
+  mr: "नवीन स्कॅन करा"
+},
   severity_high: {
     en: "High",
     hi: "ज्यादा",
@@ -291,6 +364,167 @@ feature3Desc: {
     kn: "ಮಧ್ಯ–ಕೊನೆ",
     mr: "मध्य–शेवट"
   },
+  // Add these to your translations object in LanguageContext.tsx
+
+// Crops
+crop_apple: {
+  en: 'Apple',
+  hi: 'सेब',
+  te: 'ఆపిల్',
+  ta: 'ஆப்பிள்',
+  kn: 'ಸೇಬು',
+  mr: 'सफरचंद'
+},
+
+crop_corn: {
+  en: 'Corn',
+  hi: 'मक्का',
+  te: 'మొక్కజొన్న',
+  ta: 'சோளம்',
+  kn: 'ಜೋಳ',
+  mr: 'मका'
+},
+
+crop_grape: {
+  en: 'Grape',
+  hi: 'अंगूर',
+  te: 'ద్రాక్ష',
+  ta: 'திராட்சை',
+  kn: 'ದ್ರಾಕ್ಷಿ',
+  mr: 'द्राक्षे'
+},
+
+crop_potato: {
+  en: 'Potato',
+  hi: 'आलू',
+  te: 'బంగాళాదుంప',
+  ta: 'உருளைக்கிழங்கு',
+  kn: 'ಆಲೂಗಡ್ಡೆ',
+  mr: 'बटाटा'
+},
+
+crop_tomato: {
+  en: 'Tomato',
+  hi: 'टमाटर',
+  te: 'టమాటా',
+  ta: 'தக்காளி',
+  kn: 'ಟೊಮೇಟೊ',
+  mr: 'टोमॅटो'
+},
+
+// Apple Diseases
+disease_apple_scab: {
+  en: 'Apple Scab',
+  hi: 'सेब का स्कैब रोग',
+  te: 'ఆపిల్ స్కాబ్',
+  ta: 'ஆப்பிள் ஸ்கேப்',
+  kn: 'ಆಪಲ್ ಸ್ಕ್ಯಾಬ್',
+  mr: 'सफरचंद स्कॅब'
+},
+
+disease_black_rot: {
+  en: 'Black Rot',
+  hi: 'काला सड़न रोग',
+  te: 'నల్ల కుళ్ళు',
+  ta: 'கருப்பு அழுகல்',
+  kn: 'ಕಪ್ಪು ಕೊಳೆತ',
+  mr: 'काळा कुजणे'
+},
+
+disease_cedar_apple_rust: {
+  en: 'Cedar Apple Rust',
+  hi: 'सीडर सेब जंग',
+  te: 'సీడర్ ఆపిల్ రస్ట్',
+  ta: 'சிடார் ஆப்பிள் துரு',
+  kn: 'ಸೀಡರ್ ಆಪಲ್ ತುಕ್ಕು',
+  mr: 'सीडर सफरचंद गंज'
+},
+
+// Corn Diseases
+disease_cercospora_leaf_spot: {
+  en: 'Cercospora Leaf Spot',
+  hi: 'पत्ती धब्बा रोग',
+  te: 'సర్కోస్పోరా ఆకు మచ్చ',
+  ta: 'இலை புள்ளி நோய்',
+  kn: 'ಎಲೆ ಚುಕ್ಕೆ ರೋಗ',
+  mr: 'पानावर डाग'
+},
+
+disease_common_rust: {
+  en: 'Common Rust',
+  hi: 'साधारण जंग',
+  te: 'సాధారణ రస్ట్',
+  ta: 'பொதுவான துரு',
+  kn: 'ಸಾಮಾನ್ಯ ತುಕ್ಕು',
+  mr: 'सामान्य गंज'
+},
+
+disease_northern_leaf_blight: {
+  en: 'Northern Leaf Blight',
+  hi: 'उत्तरी पत्ती झुलसा',
+  te: 'ఉత్తర ఆకు దహనం',
+  ta: 'வடக்கு இலை தீய்ப்பு',
+  kn: 'ಉತ್ತರ ಎಲೆ ಸುಟ್ಟು',
+  mr: 'उत्तरी पाने कुजणे'
+},
+
+// Grape Diseases
+disease_esca_black_measles: {
+  en: 'Esca (Black Measles)',
+  hi: 'एस्का रोग',
+  te: 'ఎస్కా (నల్ల మీజిల్స్)',
+  ta: 'எஸ்கா (கருப்பு தட்டம்)',
+  kn: 'ಎಸ್ಕಾ (ಕಪ್ಪು ಮೀಸಲ್ಸ್)',
+  mr: 'एस्का रोग'
+},
+
+disease_leaf_blight: {
+  en: 'Leaf Blight',
+  hi: 'पत्ती झुलसा',
+  te: 'ఆకు దహనం',
+  ta: 'இலை தீய்ப்பு',
+  kn: 'ಎಲೆ ಸುಟ್ಟು',
+  mr: 'पाने कुजणे'
+},
+
+// Potato Diseases
+disease_early_blight: {
+  en: 'Early Blight',
+  hi: 'शुरुआती झुलसा',
+  te: 'ప్రారంభ దహనం',
+  ta: 'ஆரம்ப தீய்ப்பு',
+  kn: 'ಆರಂಭಿಕ ಸುಟ್ಟು',
+  mr: 'सुरुवातीचे कुजणे'
+},
+
+disease_late_blight: {
+  en: 'Late Blight',
+  hi: 'अंतिम झुलसा',
+  te: 'చివరి దహనం',
+  ta: 'பிந்திய தீய்ப்பு',
+  kn: 'ಕೊನೆಯ ಸುಟ್ಟು',
+  mr: 'शेवटचे कुजणे'
+},
+
+// Tomato Diseases
+disease_bacterial_spot: {
+  en: 'Bacterial Spot',
+  hi: 'बैक्टीरिया धब्बा',
+  te: 'బ్యాక్టీరియా మచ్చ',
+  ta: 'பாக்டீரியா புள்ளி',
+  kn: 'ಬ್ಯಾಕ್ಟೀರಿಯಾ ಚುಕ್ಕೆ',
+  mr: 'जीवाणू डाग'
+},
+
+// Healthy status
+status_healthy: {
+  en: 'Healthy',
+  hi: 'स्वस्थ',
+  te: 'ఆరోగ్యకరమైన',
+  ta: 'ஆரோக்கியமான',
+  kn: 'ಆರೋಗ್ಯಕರ',
+  mr: 'निरोगी'
+},
   
   // Remedies
   homeRemedies: { en: 'Home Remedies', hi: 'घरेलू उपाय', te: 'ఇంట్లో చేయగలిగే నివారణలు', ta: 'வீட்டு வைத்தியம்', kn: 'ಮನೆ ಮದ್ದುಗಳು', mr: 'घरगुती उपाय' },
