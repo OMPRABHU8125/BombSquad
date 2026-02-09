@@ -7,15 +7,46 @@ import ReadAloudButton from "@/components/common/ReadAloudButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getFarmerCropSuggestion, FarmerResponse } from "@/services/farmerApi";
 
 const Home = () => {
   const { t } = useLanguage();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  
+  const [loadingCrops, setLoadingCrops] = useState(true);
+  const [cropData, setCropData] = useState<FarmerResponse | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const data = await getFarmerCropSuggestion(latitude, longitude);
+          setCropData(data);
+        } catch (error) {
+          setLocationError("Failed to fetch crop suggestions");
+        } finally {
+          setLoadingCrops(false);
+        }
+      },
+      () => {
+        setLocationError("Location permission denied");
+        setLoadingCrops(false);
+      }
+    );
+  }, []);
+
+
   // Extract first name from full name
   const firstName = user?.name?.split(' ')[0] || 'Farmer';
-  
+
   const welcomeText = `${t('welcomeBack')}, ${firstName}. Check the weather conditions and recent scans. Use quick actions to scan your crops or access the disease library.`;
 
   const handleLogout = () => {
@@ -31,8 +62,8 @@ const Home = () => {
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center gap-4">
               {user?.picture ? (
-                <img 
-                  src={user.picture} 
+                <img
+                  src={user.picture}
                   alt={user.name}
                   className="w-14 h-14 rounded-xl object-cover shadow-lg border-2 border-green-500"
                 />
@@ -57,9 +88,9 @@ const Home = () => {
                 <Bell className="w-6 h-6 text-gray-700 dark:text-gray-300" />
                 <span className="absolute top-2 right-2 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 animate-pulse" />
               </button>
-              
+
               {user && (
-                <button 
+                <button
                   onClick={handleLogout}
                   className="p-3 bg-red-50 dark:bg-red-900/30 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors shadow-sm group"
                   title="Logout"
@@ -75,12 +106,12 @@ const Home = () => {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* Left Column - Main Content */}
           <div className="lg:col-span-8 space-y-8">
             {/* Weather Widget */}
             <WeatherWidget />
-            
+
             {/* Quick Actions Section */}
             <section>
               <div className="flex items-center justify-between mb-6">
@@ -122,29 +153,49 @@ const Home = () => {
             </div>
 
             {/* Stats Card */}
-            <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg p-6 text-white">
-              <h3 className="font-bold text-lg mb-4">Your Progress</h3>
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Scans This Month</span>
-                    <span className="font-bold">12</span>
-                  </div>
-                  <div className="w-full bg-white/20 rounded-full h-2">
-                    <div className="bg-white rounded-full h-2" style={{ width: '60%' }}></div>
-                  </div>
+            {/* Suggested Crops Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                  <span className="text-xl">🌱</span>
                 </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Healthy Crops</span>
-                    <span className="font-bold">85%</span>
-                  </div>
-                  <div className="w-full bg-white/20 rounded-full h-2">
-                    <div className="bg-white rounded-full h-2" style={{ width: '85%' }}></div>
-                  </div>
-                </div>
+                <h3 className="font-bold text-gray-900 dark:text-white">
+                  Suggested Crops to Grow Now
+                </h3>
               </div>
+
+              {loadingCrops && (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Fetching recommendations based on your location...
+                </p>
+              )}
+
+              {locationError && (
+                <p className="text-sm text-red-500">{locationError}</p>
+              )}
+
+              {cropData && (
+                <>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    📍 {cropData.location.state}, {cropData.location.country}
+                    <br />
+                    🌦 {cropData.season} Season
+                  </p>
+
+                  <ul className="grid grid-cols-2 gap-2">
+                    {cropData.suggestedCrops.map((crop) => (
+                      <li
+                        key={crop}
+                        className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 text-sm font-medium px-3 py-2 rounded-lg text-center"
+                      >
+                        {crop}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
+
 
             {/* Support Card */}
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6">
